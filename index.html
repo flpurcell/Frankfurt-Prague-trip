@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
+<meta content="#16233b" name="theme-color"/>
+<title>Brussels via London · Sep 10–17, 2026</title>
+<style>
+:root {
+  --ink:#182033; --muted:#6b7280; --paper:#f6f7fb; --card:#fff; --line:#e4e7ee;
+  --nav:#16233b; --accent:#3867d6; --green:#19724a; --amber:#9a6700; --blue:#245fbd;
+  --shadow:0 8px 30px rgba(22,35,59,.08);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.45}
+button,a,input{font:inherit}
+.hero{background:linear-gradient(145deg,#16233b,#263c67);color:white;padding:calc(22px + env(safe-area-inset-top)) 20px 22px}
+.hero-inner{max-width:900px;margin:auto}
+.kicker{font-size:13px;opacity:.72;letter-spacing:.08em;text-transform:uppercase;font-weight:700}
+.hero h1{font-size:clamp(28px,8vw,46px);line-height:1.05;margin:8px 0 10px}
+.hero p{margin:0;opacity:.82}
+.nav-wrap{position:sticky;top:0;z-index:20;background:rgba(246,247,251,.92);backdrop-filter:blur(14px);border-bottom:1px solid rgba(228,231,238,.9)}
+.nav{max-width:900px;margin:auto;display:grid;grid-template-columns:repeat(4,1fr);padding:8px}
+.nav button{border:0;background:transparent;padding:10px 4px;border-radius:10px;color:#667085;font-size:13px;font-weight:700}
+.nav button.active{background:white;color:var(--ink);box-shadow:0 2px 12px rgba(22,35,59,.07)}
+main{max-width:900px;margin:auto;padding:16px 14px 90px}
+.view{display:none} .view.active{display:block}
+.day-strip{display:flex;gap:8px;overflow-x:auto;padding:2px 0 14px;scrollbar-width:none}
+.day-strip::-webkit-scrollbar{display:none}
+.day-chip{white-space:nowrap;border:1px solid var(--line);background:white;border-radius:14px;padding:10px 13px;color:var(--muted);box-shadow:0 2px 8px rgba(22,35,59,.03)}
+.day-chip span{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.07em;font-weight:800}
+.day-chip.active{background:var(--nav);color:white;border-color:var(--nav)}
+.day-panel{display:none} .day-panel.active{display:block}
+.day-heading{display:flex;justify-content:space-between;align-items:end;margin:6px 2px 14px}
+.eyebrow{font-size:12px;color:var(--accent);font-weight:800;text-transform:uppercase;letter-spacing:.07em}
+.day-heading h2{margin:2px 0 0;font-size:24px}
+.timeline{display:flex;flex-direction:column;gap:10px}
+.event{display:grid;grid-template-columns:76px 1fr;background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:0 3px 16px rgba(22,35,59,.04)}
+.time{padding:16px 8px 14px 14px;color:var(--muted);font-size:13px;font-weight:750;border-right:1px solid var(--line)}
+.eventbody{padding:14px}
+.eventtop{display:flex;gap:10px;align-items:start;justify-content:space-between}
+.event h3{font-size:16px;margin:0;line-height:1.25}
+.event p{font-size:14px;color:#5f6674;margin:7px 0 0}
+.status{display:inline-block;font-size:11px;font-weight:800;padding:4px 7px;border-radius:999px;white-space:nowrap}
+.status.booked{background:#e9f7ef;color:var(--green)}
+.status.planned{background:#fff4d6;color:var(--amber)}
+.status.open{background:#eaf2ff;color:var(--blue)}
+.status.neutral{background:#eef0f4;color:#596170}
+.maplink{display:inline-block;margin-top:10px;text-decoration:none;font-size:13px;font-weight:800;color:var(--accent)}
+.section-title{margin:4px 2px 14px} .section-title h2{margin:0;font-size:24px} .section-title p{margin:5px 0 0;color:var(--muted);font-size:14px}
+.booking-grid{display:grid;gap:10px}
+.booking-card{background:white;border:1px solid var(--line);border-radius:16px;padding:15px;box-shadow:0 3px 16px rgba(22,35,59,.04)}
+.booking-head{display:flex;justify-content:space-between;gap:10px;align-items:center}
+.category{font-size:12px;text-transform:uppercase;letter-spacing:.07em;font-weight:800;color:var(--muted)}
+.booking-card h3{font-size:16px;margin:9px 0 4px} .booking-card p{font-size:14px;color:#5f6674;margin:0}
+.alert{background:#fff8df;border:1px solid #f0d98e;border-radius:14px;padding:13px 14px;margin-bottom:14px;font-size:14px}
+.place-grid{display:grid;gap:10px}
+.place-card{display:flex;justify-content:space-between;gap:12px;align-items:center;text-decoration:none;color:inherit;background:white;border:1px solid var(--line);border-radius:16px;padding:14px;box-shadow:0 3px 16px rgba(22,35,59,.04)}
+.place-card div{min-width:0} .place-day{display:block;font-size:11px;color:var(--accent);font-weight:800;margin-bottom:4px}
+.place-card strong{display:block;font-size:15px} .place-card small{display:block;color:var(--muted);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.arrow{font-size:22px;color:var(--accent)}
+.pack-summary{display:flex;justify-content:space-between;align-items:center;background:var(--nav);color:white;padding:14px 16px;border-radius:16px;margin-bottom:12px}
+.pack-summary strong{font-size:20px} .pack-summary small{opacity:.72}
+.pack-group{background:white;border:1px solid var(--line);border-radius:16px;padding:14px 15px;margin-bottom:10px}
+.pack-group h3{font-size:15px;margin:0 0 8px}
+.checkrow{display:flex;align-items:center;gap:11px;padding:9px 0;border-top:1px solid #f0f1f4;font-size:14px}
+.checkrow:first-of-type{border-top:0}
+.checkrow input{width:20px;height:20px;accent-color:var(--accent)}
+.checkrow input:checked + span{text-decoration:line-through;color:#9298a5}
+.footer-note{text-align:center;color:#8a91a0;font-size:12px;margin-top:22px}
+@media(min-width:720px){
+  main{padding-left:20px;padding-right:20px}
+  .booking-grid,.place-grid{grid-template-columns:1fr 1fr}
+  .event{grid-template-columns:100px 1fr}
+}
+@media print{
+ .nav-wrap,.day-strip{display:none!important} .view{display:block!important} .day-panel{display:block!important}
+ body{background:white} main{max-width:none} .event,.booking-card,.pack-group{break-inside:avoid;box-shadow:none}
+}
+</style>
+</head>
+<body>
+<header class="hero">
+<div class="hero-inner">
+<div class="kicker">Trip companion</div>
+<h1>London + Brussels</h1>
+<p>September 10–17, 2026 · Frank, Kirsten &amp; Kent</p>
+</div>
+</header>
+<div class="nav-wrap">
+<nav aria-label="Trip sections" class="nav">
+<button class="tab active" data-view="schedule">Schedule</button>
+<button class="tab" data-view="bookings">Bookings</button>
+<button class="tab" data-view="maps">Maps</button>
+<button class="tab" data-view="packing">Packing</button>
+</nav>
+</div>
+<main>
+<section class="view active" id="schedule">
+<div class="day-strip"><button class="day-chip active" data-day-btn="0"><span>Thu</span>10 Sep</button><button class="day-chip" data-day-btn="1"><span>Fri</span>11 Sep</button><button class="day-chip" data-day-btn="2"><span>Sat</span>12 Sep</button><button class="day-chip" data-day-btn="3"><span>Sun</span>13 Sep</button><button class="day-chip" data-day-btn="4"><span>Mon</span>14 Sep</button><button class="day-chip" data-day-btn="5"><span>Tue</span>15 Sep</button><button class="day-chip" data-day-btn="6"><span>Wed</span>16 Sep</button><button class="day-chip" data-day-btn="7"><span>Thu</span>17 Sep</button></div>
+<section class="day-panel active" data-day="0">
+<div class="day-heading">
+<div>
+<span class="eyebrow">Day 1</span>
+<h2>Thu 10 Sep</h2>
+</div>
+</div>
+<div class="timeline">
+<article class="event">
+<div class="time">7:30 PM</div>
+<div class="eventbody">
+<div class="eventtop"><h3>Kent departs MSP</h3><span class="status booked">Booked</span></div>
+<p>Icelandair FI656, MSP Terminal 2 → Keflavík. Overnight flight.</p>
+</div>
+</article>
+<article class="event">
+<div class="time">11:10 PM</div>
+<div class="eventbody">
+<div class="eventtop"><h3>You + Kirsten depart MSP</h3><span class="status booked">Booked</span></div>
+<p>Delta DL10, MSP Terminal 1 → London Heathrow. Overnight. Seats 39J/39H.</p>
+</div>
+</article>
+</div>
+</section>
+<section class="day-panel" data-day="1">
+<div class="day-heading">
+<div>
+<span class="eyebrow">Day 2</span>
+<h2>Fri 11 Sep</h2>
+</div>
+</div>
+<div class="timeline">
+<article class="event">
+<div class="time">6:35 AM</div>
+<div class="eventbody">
+<div class="eventtop"><h3>Kent connects at Keflavík</h3><span class="status booked">Booked</span></div>
+<p>FI656 lands KEF 06:35; 1h5m connection to FI450 at 07:40.</p>
+</div>
+</article>
+<article class="event">
+<div class="time">11:55 AM</div>
+<div class="eventbody">
+<div class="eventtop"><h3>Kent arrives London</h3><span class="status booked">Booked</span></div>
+<p>Icelandair FI450, Heathrow Terminal 2.</p>
+</div>
+</article>
+<article class="event">
+<div class="time">1:05 PM</div>
+<div class="eventbody">
+<div class="eventtop"><h3>You + Kirsten arrive London</h3><span class="status booked">Booked</span></div>
+<p>Delta DL10, Heathrow Terminal 3.</p>
+</div>
+</article>
+<article class="event">
+<div class="time">3:00 PM</div>
+<div class="eventbody">
+<div class="eventtop"><h3>Check in — Four Points Euston</h3><span class="status booked">Booked</span></div>
+<p>Four Points Flex by Sheraton London Euston. Ref 73532862558449. Nights 11–13.</p>
+<a class="maplink" href="https://www.google.com/maps/search/?api=1&amp;query=Four%20Points%20Flex%20by%20Sheraton%20London%20Euston" rel="noopener" target="_blank">Map ↗</a>
+</div>
+</article>
+<article class="event">
+<div class="time">7:45 PM</div>
+<div class="eventbody">
+<div class="eventtop"><h3>Dinner — Pentole &amp; Padelle</h3><span class="status booked">Booked</span></div>
+<p>35 Store St, WC1E 7BS. Party of 5 (Frank, Kirsten, Kent, John, Julie). +44 7728 538294.</p>
+<a class="maplink" href="https://www.google.com/maps/search/?api=1&amp;query=Pentole%20%26%20Padelle%2C%2035%20Store%20St%2C%20London%20WC1E%207BS" rel="noopener" target="_blank">Map ↗</a>
+</div>
+</article>
+</div>
+</section>
+<section class="day-panel" data-day="2">
+<div class="day-heading">
+<div>
+<span class="eyebrow">Day 3</span>
+<h2>Sat 12 Sep</h2>
+</div>
+</div>
+<div class="timeline">
+<article class="event">
+<div class="time">Daytime</div>
+<div class="eventbody">
+<div class="eventtop"><h3>Free — central London</h3><span class="status open">Open</span></div>
+<p>Near hotel: British Museum (10-min walk), Bloomsbury.</p>
+</div>
+</article>
+<article class="event">
+<div class="time">4:00 PM</div>
+<div class="eventbody">
+<div class="eventtop"><h3>Dinner — Wembley Tandoori</h3><span class="status planned">Planned</span></div>
+<p>Indian dinner near the arena before doors (~12-min walk to OVO). wembley-tandoori.com. Party of 3.</p>
+<a class="maplink" href="https://www.google.com/maps/search/?api=1&amp;query=Wembley%20Tandoori%2C%20London" rel="noopener" target="_blank">Map ↗</a>
+</div>
+</article>
+<article class="event">
+<div class="time">6:00 PM</div>
+<div class="eventbody">
+<div class="eventtop"><h3>Mis-Teeq reunion concert</h3><span class="status booked">Booked</span></div>
+<p>OVO Arena Wembley. Doors/start 18:00. Washington, Nash, Dixon.</p>
+<a class="maplink" href="https://www.google.com/maps/search/?api=1&amp;query=OVO%20Arena%20Wembley%2C%20London" rel="noopener" target="_blank">Map ↗</a>
+</div>
+</article>
+</div>
+</section>
+<section class="day-panel" data-day="3">
+<div class="day-heading">
+<div>
+<span class="eyebrow">Day 4</span>
+<h2>Sun 13 Sep</h2>
+</div>
+</div>
+<div class="timeline">
+
+<article class="event">
+<div class="time">1:45 PM</div>
+<div class="eventbody">
+<div class="eventtop"><h3>Travel to South Norwood</h3></div>
+<p>Train to Norwood Junction (~45–55 min from Euston).</p>
+</div>
+</article>
+<article class="event">
+<div class="time">3:00 PM</div>
+<div class="eventbody">
+<div class="eventtop"><h3>Stanley Arts — Frank's old school</h3><span class="status booked">Booked</span></div>
+<p>Open House Festival, 12 South Norwood Hill, SE25 6AB. 3 tickets. Ref 2026-3190-2349.</p>
+<a class="maplink" href="https://www.google.com/maps/search/?api=1&amp;query=Stanley%20Arts%2C%2012%20South%20Norwood%20Hill%2C%20London%20SE25%206AB" rel="noopener" target="_blank">Map ↗</a>
+</div>
+</article>
+<article class="event">
+<div class="time">Evening</div>
+<div class="eventbody">
+<div class="eventtop"><h3>Free — back central</h3><span class="status open">Open</span></div>
+<p></p>
+</div>
+</article>
+</div>
+</section>
+<section class="day-panel" data-day="4">
+<div class="day-heading">
+<div>
+<span class="eyebrow">Day 5</span>
+<h2>Mon 14 Sep</h2>
+</div>
+</div>
+<div class="timeline">
+<article class="event">
+<div class="time">11:30 AM</div>
+<div class="eventbody">
+<div class="eventtop"><h3>Kent — appointment near his flat (W10)</h3><span class="status booked">Confirmed</span></div>
+<p>~1 hr. Then W10 → St Pancras (~35-40 min) to meet for the 15:04 Eurostar. Ample margin.</p>
+<a class="maplink" href="https://www.google.com/maps/search/?api=1&amp;query=St%20Pancras%20International%2C%20London" rel="noopener" target="_blank">Map ↗</a>
+</div>
+</article>
+<article class="event">
+<div class="time">12:00 PM</div>
+<div class="eventbody">
+<div class="eventtop"><h3>Check out — Four Points Euston</h3></div>
+<p>Walk bags to St Pancras for Eurostar.</p>
+<a class="maplink" href="https://www.google.com/maps/search/?api=1&amp;query=Four%20Points%20Flex%20by%20Sheraton%20London%20Euston" rel="noopener" target="_blank">Map ↗</a>
+</div>
+</article>
+<article class="event">
+<div class="time">1:49 PM</div>
+<div class="eventbody">
+<div class="eventtop"><h3>St Pancras — Eurostar gates</h3></div>
+<p>Be at gates by 13:49; close 30 min before departure.</p>
+<a class="maplink" href="https://www.google.com/maps/search/?api=1&amp;query=St%20Pancras%20International%2C%20London" rel="noopener" target="_blank">Map ↗</a>
+</div>
+</article>
+<article class="event">
+<div class="time">3:04 PM</div>
+<div class="eventbody">
+<div class="eventtop"><h3>Eurostar 9140 → Brussels</h3><span class="status booked">Booked</span></div>
+<p>Dep 15:04 → arr Brussels Midi 18:05. Coach 12, seat 57.</p>
+</div>
+</article>
+<article class="event">
+<div class="time">6:30 PM</div>
+<div class="eventbody">
+<div class="eventtop"><h3>Check in — ibis off Grand Place</h3><span class="status booked">Booked</span></div>
+<p>ibis Brussels off Grand Place. Ref 73532903847036. Standard Triple. Nights 14–15.</p>
+<a class="maplink" href="https://www.google.com/maps/search/?api=1&amp;query=ibis%20Brussels%20off%20Grand%20Place" rel="noopener" target="_blank">Map ↗</a>
+</div>
+</article>
+<article class="event">
+<div class="time">7:15 PM</div>
+<div class="eventbody">
+<div class="eventtop"><h3>Grand Place + Manneken Pis</h3></div>
+<p>5 min from hotel; Manneken Pis 2 min further (quick photo).</p>
+<a class="maplink" href="https://www.google.com/maps/search/?api=1&amp;query=Grand%20Place%2C%20Brussels" rel="noopener" target="_blank">Map ↗</a>
+</div>
+</article>
+<article class="event">
+<div class="time">8:00 PM</div>
+<div class="eventbody">
+<div class="eventtop"><h3>Dinner — Fin de Siècle</h3><span class="status planned">Planned</span></div>
+<p>Rue des Chartreux 9. Traditional brasserie, deep beer list. CASH ONLY, no reservations — arrive by 8.</p>
+<a class="maplink" href="https://www.google.com/maps/search/?api=1&amp;query=Fin%20de%20Si%C3%A8cle%2C%20Rue%20des%20Chartreux%209%2C%20Brussels" rel="noopener" target="_blank">Map ↗</a>
+</div>
+</article>
+</div>
+</section>
+<section class="day-panel" data-day="5">
+<div class="day-heading">
+<div>
+<span class="eyebrow">Day 6</span>
+<h2>Tue 15 Sep</h2>
+</div>
+</div>
+<div class="timeline">
+<article class="event">
+<div class="time">7:45 AM</div>
+<div class="eventbody">
+<div class="eventtop"><h3>Breakfast near hotel</h3></div>
+<p>Quick coffee/pastry before the tour.</p>
+</div>
+</article>
+<article class="event">
+<div class="time">9:00 AM</div>
+<div class="eventbody">
+<div class="eventtop"><h3>Bruges &amp; Ghent tour</h3><span class="status booked">Booked</span></div>
+<p>Meet Carrefour de l'Europe (2 min walk). Ref #1442017247. 3 adults, English, boat ride included.</p>
+<a class="maplink" href="https://www.google.com/maps/search/?api=1&amp;query=Carrefour%20de%20l%27Europe%2C%20Brussels" rel="noopener" target="_blank">Map ↗</a>
+</div>
+</article>
+<article class="event">
+<div class="time">~7:30 PM</div>
+<div class="eventbody">
+<div class="eventtop"><h3>Back in Brussels</h3></div>
+<p>Tour ends at the meeting point (~10h30 total).</p>
+</div>
+</article>
+<article class="event">
+<div class="time">8:00 PM</div>
+<div class="eventbody">
+<div class="eventtop"><h3>Dinner — Brasserie Ommegang</h3><span class="status planned">Planned</span></div>
+<p>Rue de la Montagne 4. Belgian classics, big beer list. Takes bookings — reserve ~8:00.</p>
+<a class="maplink" href="https://www.google.com/maps/search/?api=1&amp;query=Brasserie%20Ommegang%2C%20Rue%20de%20la%20Montagne%204%2C%20Brussels" rel="noopener" target="_blank">Map ↗</a>
+</div>
+</article>
+</div>
+</section>
+<section class="day-panel" data-day="6">
+<div class="day-heading">
+<div>
+<span class="eyebrow">Day 7</span>
+<h2>Wed 16 Sep</h2>
+</div>
+</div>
+<div class="timeline">
+<article class="event">
+<div class="time">10:00 AM</div>
+<div class="eventbody">
+<div class="eventtop"><h3>Atomium (+ Design Museum)</h3><span class="status booked">Booked</span></div>
+<p>Metro line 6 to Heysel. Ticket ORD13631859, valid 10:00–6:00. Design Museum after the Atomium.</p>
+<a class="maplink" href="https://www.google.com/maps/search/?api=1&amp;query=Atomium%2C%20Brussels" rel="noopener" target="_blank">Map ↗</a>
+</div>
+</article>
+<article class="event">
+<div class="time">11:00 AM</div>
+<div class="eventbody">
+<div class="eventtop"><h3>Check out — ibis Brussels</h3></div>
+<p>Leave bags at reception for the day.</p>
+</div>
+</article>
+<article class="event">
+<div class="time">1:00 PM</div>
+<div class="eventbody">
+<div class="eventtop"><h3>Lunch + last wander</h3><span class="status open">Open</span></div>
+<p>Sandwiches at Tonton Garby or De Pistolei; chocolate + Galeries Royales Saint-Hubert.</p>
+<a class="maplink" href="https://www.google.com/maps/search/?api=1&amp;query=Galeries%20Royales%20Saint-Hubert%2C%20Brussels" rel="noopener" target="_blank">Map ↗</a>
+</div>
+</article>
+<article class="event">
+<div class="time">5:00 PM</div>
+<div class="eventbody">
+<div class="eventtop"><h3>Collect bags → Brussels Midi</h3></div>
+<p>Gates close 30 min before departure.</p>
+</div>
+</article>
+<article class="event">
+<div class="time">5:56 PM</div>
+<div class="eventbody">
+<div class="eventtop"><h3>Eurostar 9153 → London</h3><span class="status booked">Booked</span></div>
+<p>Dep 17:56 → arr St Pancras 18:57. Coach 17, seat 41.</p>
+<a class="maplink" href="https://www.google.com/maps/search/?api=1&amp;query=St%20Pancras%20International%2C%20London" rel="noopener" target="_blank">Map ↗</a>
+</div>
+</article>
+<article class="event">
+<div class="time">7:15 PM</div>
+<div class="eventbody">
+<div class="eventtop"><h3>Cross to Renaissance Heathrow</h3><span class="status booked">Booked</span></div>
+<p>~1 hr from St Pancras. Conf 30144331. Dinner near St Pancras or at hotel.</p>
+<a class="maplink" href="https://www.google.com/maps/search/?api=1&amp;query=St%20Pancras%20International%2C%20London" rel="noopener" target="_blank">Map ↗</a>
+</div>
+</article>
+</div>
+</section>
+<section class="day-panel" data-day="7">
+<div class="day-heading">
+<div>
+<span class="eyebrow">Day 8</span>
+<h2>Thu 17 Sep</h2>
+</div>
+</div>
+<div class="timeline">
+<article class="event">
+<div class="time">9:30 AM</div>
+<div class="eventbody">
+<div class="eventtop"><h3>Renaissance Heathrow → airport</h3></div>
+<p>Short hop to the terminal for the midday flight.</p>
+<a class="maplink" href="https://www.google.com/maps/search/?api=1&amp;query=Renaissance%20London%20Heathrow%20Hotel" rel="noopener" target="_blank">Map ↗</a>
+</div>
+</article>
+<article class="event">
+<div class="time">12:25 PM</div>
+<div class="eventbody">
+<div class="eventtop"><h3>You + Kirsten depart London</h3><span class="status booked">Booked</span></div>
+<p>Delta DL9, Heathrow Terminal 3 → MSP Terminal 1. Seats 38J/38H.</p>
+</div>
+</article>
+<article class="event">
+<div class="time">3:25 PM</div>
+<div class="eventbody">
+<div class="eventtop"><h3>Arrive MSP</h3></div>
+<p>Home. (Kent stays in London.)</p>
+</div>
+</article>
+</div>
+</section>
+</section>
+<section class="view" id="bookings">
+<div class="section-title"><h2>Reservations</h2><p>Confirmation details in one place.</p></div>
+<div class="alert"><strong>Still to do:</strong> Brasserie Ommegang is marked “reserve”; Wembley Tandoori is planned; Fin de Siècle is cash only and does not take reservations.</div>
+<div class="booking-grid">
+<article class="booking-card">
+<div class="booking-head">
+<span class="category">Flight</span>
+<span class="status booked">Booked</span>
+</div>
+<h3>Kent: MSP→KEF→LHR (Icelandair FI656/FI450)</h3>
+<p>Ref CV75VU · Thu 10 → Fri 11 Sep</p>
+</article>
+<article class="booking-card">
+<div class="booking-head">
+<span class="category">Flight</span>
+<span class="status booked">Booked</span>
+</div>
+<h3>You+Kirsten: MSP→LHR (Delta DL10)</h3>
+<p>Thu 10 Sep 23:10 · Seats 39J/39H</p>
+</article>
+<article class="booking-card">
+<div class="booking-head">
+<span class="category">Flight</span>
+<span class="status booked">Booked</span>
+</div>
+<h3>You+Kirsten: LHR→MSP (Delta DL9)</h3>
+<p>Thu 17 Sep 12:25 · Seats 38J/38H</p>
+</article>
+<article class="booking-card">
+<div class="booking-head">
+<span class="category">Train</span>
+<span class="status booked">Booked</span>
+</div>
+<h3>Eurostar 9140 London→Brussels</h3>
+<p>Mon 14 Sep 15:04 · Coach 12, seat 57 · PNR WF6DV2</p>
+</article>
+<article class="booking-card">
+<div class="booking-head">
+<span class="category">Train</span>
+<span class="status booked">Booked</span>
+</div>
+<h3>Eurostar 9153 Brussels→London</h3>
+<p>Wed 16 Sep 17:56 · Coach 17, seat 41 · PNR WF6DV2</p>
+</article>
+<article class="booking-card">
+<div class="booking-head">
+<span class="category">Hotel</span>
+<span class="status booked">Booked</span>
+</div>
+<h3>Four Points Flex by Sheraton London Euston</h3>
+<p>Sep 11–14 · Ref 73532862558449</p>
+</article>
+<article class="booking-card">
+<div class="booking-head">
+<span class="category">Hotel</span>
+<span class="status booked">Booked</span>
+</div>
+<h3>ibis Brussels off Grand Place (Std Triple)</h3>
+<p>Sep 14–16 · Ref 73532903847036</p>
+</article>
+<article class="booking-card">
+<div class="booking-head">
+<span class="category">Hotel</span>
+<span class="status booked">Booked</span>
+</div>
+<h3>Renaissance London Heathrow</h3>
+<p>Sep 16–17 · Conf 30144331</p>
+</article>
+<article class="booking-card">
+<div class="booking-head">
+<span class="category">Activity</span>
+<span class="status booked">Booked</span>
+</div>
+<h3>Bruges &amp; Ghent small-group tour + boat</h3>
+<p>Tue 15 Sep 9:00 · Ref #1442017247 · 3 adults</p>
+</article>
+<article class="booking-card">
+<div class="booking-head">
+<span class="category">Activity</span>
+<span class="status booked">Booked</span>
+</div>
+<h3>Atomium admission (+ Design Museum)</h3>
+<p>Wed 16 Sep · Order ORD13631859</p>
+</article>
+<article class="booking-card">
+<div class="booking-head">
+<span class="category">Event</span>
+<span class="status booked">Booked</span>
+</div>
+<h3>Mis-Teeq — OVO Arena Wembley</h3>
+<p>Sat 12 Sep 18:00 doors</p>
+</article>
+<article class="booking-card">
+<div class="booking-head">
+<span class="category">Event</span>
+<span class="status booked">Booked</span>
+</div>
+<h3>Stanley Arts — Open House Festival</h3>
+<p>Sun 13 Sep 15:00 · Ref 2026-3190-2349 · 3 tickets</p>
+</article>
+
+<article class="booking-card">
+<div class="booking-head">
+<span class="category">Dining</span>
+<span class="status booked">Booked</span>
+</div>
+<h3>Pentole &amp; Padelle</h3>
+<p>Fri 11 Sep 19:45 · Party of 5 · +44 7728 538294</p>
+</article>
+<article class="booking-card">
+<div class="booking-head">
+<span class="category">Dining</span>
+<span class="status planned">Planned</span>
+</div>
+<h3>Wembley Tandoori</h3>
+<p>Sat 12 Sep 16:00 · wembley-tandoori.com · party of 3</p>
+</article>
+<article class="booking-card">
+<div class="booking-head">
+<span class="category">Dining</span>
+<span class="status planned">Planned</span>
+</div>
+<h3>Fin de Siècle, Brussels</h3>
+<p>Mon 14 Sep 20:00 · cash only, no booking</p>
+</article>
+<article class="booking-card">
+<div class="booking-head">
+<span class="category">Dining</span>
+<span class="status planned">Planned</span>
+</div>
+<h3>Brasserie Ommegang, Brussels</h3>
+<p>Tue 15 Sep 20:00 · reserve</p>
+</article>
+</div>
+</section>
+<section class="view" id="maps">
+<div class="section-title"><h2>Maps</h2><p>Tap any stop to open it in Google Maps.</p></div>
+<div class="place-grid"><a class="place-card" href="https://www.google.com/maps/search/?api=1&amp;query=Four%20Points%20Flex%20by%20Sheraton%20London%20Euston" rel="noopener" target="_blank">
+<div><span class="place-day">Fri 11 Sep</span><strong>Check in — Four Points Euston</strong><small>Four Points Flex by Sheraton London Euston</small></div>
+<span class="arrow">↗</span>
+</a><a class="place-card" href="https://www.google.com/maps/search/?api=1&amp;query=Pentole%20%26%20Padelle%2C%2035%20Store%20St%2C%20London%20WC1E%207BS" rel="noopener" target="_blank">
+<div><span class="place-day">Fri 11 Sep</span><strong>Dinner — Pentole &amp; Padelle</strong><small>Pentole &amp; Padelle, 35 Store St, London WC1E 7BS</small></div>
+<span class="arrow">↗</span>
+</a><a class="place-card" href="https://www.google.com/maps/search/?api=1&amp;query=Wembley%20Tandoori%2C%20London" rel="noopener" target="_blank">
+<div><span class="place-day">Sat 12 Sep</span><strong>Dinner — Wembley Tandoori</strong><small>Wembley Tandoori, London</small></div>
+<span class="arrow">↗</span>
+</a><a class="place-card" href="https://www.google.com/maps/search/?api=1&amp;query=OVO%20Arena%20Wembley%2C%20London" rel="noopener" target="_blank">
+<div><span class="place-day">Sat 12 Sep</span><strong>Mis-Teeq reunion concert</strong><small>OVO Arena Wembley, London</small></div>
+<span class="arrow">↗</span>
+</a><a class="place-card" href="https://www.google.com/maps/search/?api=1&amp;query=Stanley%20Arts%2C%2012%20South%20Norwood%20Hill%2C%20London%20SE25%206AB" rel="noopener" target="_blank">
+<div><span class="place-day">Sun 13 Sep</span><strong>Stanley Arts — Frank's old school</strong><small>Stanley Arts, 12 South Norwood Hill, London SE25 6AB</small></div>
+<span class="arrow">↗</span>
+</a><a class="place-card" href="https://www.google.com/maps/search/?api=1&amp;query=St%20Pancras%20International%2C%20London" rel="noopener" target="_blank">
+<div><span class="place-day">Mon 14 Sep</span><strong>Kent — appointment near his flat (W10)</strong><small>St Pancras International, London</small></div>
+<span class="arrow">↗</span>
+</a><a class="place-card" href="https://www.google.com/maps/search/?api=1&amp;query=Four%20Points%20Flex%20by%20Sheraton%20London%20Euston" rel="noopener" target="_blank">
+<div><span class="place-day">Mon 14 Sep</span><strong>Check out — Four Points Euston</strong><small>Four Points Flex by Sheraton London Euston</small></div>
+<span class="arrow">↗</span>
+</a><a class="place-card" href="https://www.google.com/maps/search/?api=1&amp;query=St%20Pancras%20International%2C%20London" rel="noopener" target="_blank">
+<div><span class="place-day">Mon 14 Sep</span><strong>St Pancras — Eurostar gates</strong><small>St Pancras International, London</small></div>
+<span class="arrow">↗</span>
+</a><a class="place-card" href="https://www.google.com/maps/search/?api=1&amp;query=ibis%20Brussels%20off%20Grand%20Place" rel="noopener" target="_blank">
+<div><span class="place-day">Mon 14 Sep</span><strong>Check in — ibis off Grand Place</strong><small>ibis Brussels off Grand Place</small></div>
+<span class="arrow">↗</span>
+</a><a class="place-card" href="https://www.google.com/maps/search/?api=1&amp;query=Grand%20Place%2C%20Brussels" rel="noopener" target="_blank">
+<div><span class="place-day">Mon 14 Sep</span><strong>Grand Place + Manneken Pis</strong><small>Grand Place, Brussels</small></div>
+<span class="arrow">↗</span>
+</a><a class="place-card" href="https://www.google.com/maps/search/?api=1&amp;query=Fin%20de%20Si%C3%A8cle%2C%20Rue%20des%20Chartreux%209%2C%20Brussels" rel="noopener" target="_blank">
+<div><span class="place-day">Mon 14 Sep</span><strong>Dinner — Fin de Siècle</strong><small>Fin de Siècle, Rue des Chartreux 9, Brussels</small></div>
+<span class="arrow">↗</span>
+</a><a class="place-card" href="https://www.google.com/maps/search/?api=1&amp;query=Carrefour%20de%20l%27Europe%2C%20Brussels" rel="noopener" target="_blank">
+<div><span class="place-day">Tue 15 Sep</span><strong>Bruges &amp; Ghent tour</strong><small>Carrefour de l'Europe, Brussels</small></div>
+<span class="arrow">↗</span>
+</a><a class="place-card" href="https://www.google.com/maps/search/?api=1&amp;query=Brasserie%20Ommegang%2C%20Rue%20de%20la%20Montagne%204%2C%20Brussels" rel="noopener" target="_blank">
+<div><span class="place-day">Tue 15 Sep</span><strong>Dinner — Brasserie Ommegang</strong><small>Brasserie Ommegang, Rue de la Montagne 4, Brussels</small></div>
+<span class="arrow">↗</span>
+</a><a class="place-card" href="https://www.google.com/maps/search/?api=1&amp;query=Atomium%2C%20Brussels" rel="noopener" target="_blank">
+<div><span class="place-day">Wed 16 Sep</span><strong>Atomium (+ Design Museum)</strong><small>Atomium, Brussels</small></div>
+<span class="arrow">↗</span>
+</a><a class="place-card" href="https://www.google.com/maps/search/?api=1&amp;query=Galeries%20Royales%20Saint-Hubert%2C%20Brussels" rel="noopener" target="_blank">
+<div><span class="place-day">Wed 16 Sep</span><strong>Lunch + last wander</strong><small>Galeries Royales Saint-Hubert, Brussels</small></div>
+<span class="arrow">↗</span>
+</a><a class="place-card" href="https://www.google.com/maps/search/?api=1&amp;query=St%20Pancras%20International%2C%20London" rel="noopener" target="_blank">
+<div><span class="place-day">Wed 16 Sep</span><strong>Eurostar 9153 → London</strong><small>St Pancras International, London</small></div>
+<span class="arrow">↗</span>
+</a><a class="place-card" href="https://www.google.com/maps/search/?api=1&amp;query=St%20Pancras%20International%2C%20London" rel="noopener" target="_blank">
+<div><span class="place-day">Wed 16 Sep</span><strong>Cross to Renaissance Heathrow</strong><small>St Pancras International, London</small></div>
+<span class="arrow">↗</span>
+</a><a class="place-card" href="https://www.google.com/maps/search/?api=1&amp;query=Renaissance%20London%20Heathrow%20Hotel" rel="noopener" target="_blank">
+<div><span class="place-day">Thu 17 Sep</span><strong>Renaissance Heathrow → airport</strong><small>Renaissance London Heathrow Hotel</small></div>
+<span class="arrow">↗</span>
+</a></div>
+</section>
+<section class="view" id="packing">
+<div class="section-title"><h2>Packing list</h2><p>Your checks are saved on this device.</p></div>
+<div class="pack-summary"><div><small>Packed</small><br/><strong id="packCount">0 / 27</strong></div><button id="resetPack" style="border:0;background:rgba(255,255,255,.12);color:white;padding:8px 10px;border-radius:10px;font-weight:700">Reset</button></div>
+<section class="pack-group"><h3>Travel documents</h3><label class="checkrow"><input data-pack="1" type="checkbox"/><span>Passports</span></label><label class="checkrow"><input data-pack="2" type="checkbox"/><span>Eurostar tickets / PNR</span></label><label class="checkrow"><input data-pack="3" type="checkbox"/><span>Flight confirmations</span></label><label class="checkrow"><input data-pack="4" type="checkbox"/><span>Hotel confirmations</span></label><label class="checkrow"><input data-pack="5" type="checkbox"/><span>Open House / concert tickets</span></label><label class="checkrow"><input data-pack="6" type="checkbox"/><span>Travel insurance details</span></label></section><section class="pack-group"><h3>Money &amp; payments</h3><label class="checkrow"><input data-pack="7" type="checkbox"/><span>Credit/debit cards</span></label><label class="checkrow"><input data-pack="8" type="checkbox"/><span>Some cash for Fin de Siècle</span></label><label class="checkrow"><input data-pack="9" type="checkbox"/><span>GBP for London</span></label><label class="checkrow"><input data-pack="10" type="checkbox"/><span>EUR for Brussels</span></label></section><section class="pack-group"><h3>Tech</h3><label class="checkrow"><input data-pack="11" type="checkbox"/><span>Phones</span></label><label class="checkrow"><input data-pack="12" type="checkbox"/><span>Chargers</span></label><label class="checkrow"><input data-pack="13" type="checkbox"/><span>Power bank</span></label><label class="checkrow"><input data-pack="14" type="checkbox"/><span>UK plug adapter</span></label><label class="checkrow"><input data-pack="15" type="checkbox"/><span>EU plug adapter</span></label><label class="checkrow"><input data-pack="16" type="checkbox"/><span>Earbuds / headphones</span></label></section><section class="pack-group"><h3>Clothing</h3><label class="checkrow"><input data-pack="17" type="checkbox"/><span>Comfortable walking shoes</span></label><label class="checkrow"><input data-pack="18" type="checkbox"/><span>Light rain jacket</span></label><label class="checkrow"><input data-pack="19" type="checkbox"/><span>Layers / sweater</span></label><label class="checkrow"><input data-pack="20" type="checkbox"/><span>Concert outfit</span></label><label class="checkrow"><input data-pack="21" type="checkbox"/><span>One nicer dinner outfit</span></label><label class="checkrow"><input data-pack="22" type="checkbox"/><span>Underwear &amp; socks</span></label></section><section class="pack-group"><h3>Health &amp; personal</h3><label class="checkrow"><input data-pack="23" type="checkbox"/><span>Prescription medicines</span></label><label class="checkrow"><input data-pack="24" type="checkbox"/><span>Basic pain reliever</span></label><label class="checkrow"><input data-pack="25" type="checkbox"/><span>Toiletries</span></label><label class="checkrow"><input data-pack="26" type="checkbox"/><span>Glasses / contacts</span></label><label class="checkrow"><input data-pack="27" type="checkbox"/><span>Small day bag</span></label></section>
+</section>
+<div class="footer-note">Built from Brussels_London_Itinerary_Sep2026.xlsx</div>
+</main>
+<script>
+const tabs=[...document.querySelectorAll('.tab')];
+const views=[...document.querySelectorAll('.view')];
+tabs.forEach(t=>t.addEventListener('click',()=>{
+  tabs.forEach(x=>x.classList.remove('active')); t.classList.add('active');
+  views.forEach(v=>v.classList.toggle('active',v.id===t.dataset.view));
+  window.scrollTo({top:document.querySelector('.nav-wrap').offsetTop,behavior:'smooth'});
+}));
+
+const dayBtns=[...document.querySelectorAll('[data-day-btn]')];
+const dayPanels=[...document.querySelectorAll('.day-panel')];
+dayBtns.forEach(b=>b.addEventListener('click',()=>{
+  const n=b.dataset.dayBtn;
+  dayBtns.forEach(x=>x.classList.toggle('active',x.dataset.dayBtn===n));
+  dayPanels.forEach(x=>x.classList.toggle('active',x.dataset.day===n));
+  b.scrollIntoView({behavior:'smooth',inline:'center',block:'nearest'});
+}));
+
+const pack=[...document.querySelectorAll('[data-pack]')];
+function updatePack(){
+  let c=0;
+  pack.forEach(x=>{
+    const key='trip-pack-'+x.dataset.pack;
+    x.checked=localStorage.getItem(key)==='1';
+    if(x.checked)c++;
+  });
+  document.getElementById('packCount').textContent=`${c} / 27`;
+}
+pack.forEach(x=>x.addEventListener('change',()=>{
+  localStorage.setItem('trip-pack-'+x.dataset.pack,x.checked?'1':'0');
+  updatePack();
+}));
+document.getElementById('resetPack').addEventListener('click',()=>{
+  pack.forEach(x=>localStorage.removeItem('trip-pack-'+x.dataset.pack)); updatePack();
+});
+updatePack();
+</script>
+</body>
+</html>
